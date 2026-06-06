@@ -5,14 +5,14 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using WebApplication1;
+using WebApplication1.Data;
 
 #nullable disable
 
 namespace WebApplication1.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260603085819_InitialCreate")]
+    [Migration("20260606103917_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
