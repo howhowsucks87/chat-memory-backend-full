@@ -15,6 +15,12 @@ namespace WebApplication1.Controllers
     // =====================
     // AuthController
     // 負責：使用者註冊、登入、JWT 發放
+    //
+    // ⚠️ 安全性重點：
+    // - 不回傳 PasswordHash
+    // - 不暴露使用者是否存在
+    // - 使用 UTC 時間
+    // - 密碼必須使用安全雜湊（BCrypt）
     // =====================
     [ApiController] // 啟用自動 Model Binding / 驗證錯誤回傳
     [Route("api/auth")] // API 路由前綴
@@ -36,7 +42,7 @@ namespace WebApplication1.Controllers
 
             // IOptions<T> 是 ASP.NET Core 讀取 appsettings.json 的標準方式
             // .Value 才是真正的設定內容
-            _jwt = jwtOptions.Value;
+            _jwt = jwtOptions.Value;    
         }
 
         // =====================
@@ -45,12 +51,19 @@ namespace WebApplication1.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterDto dto)
         {
-            // 1️⃣ 檢查 Email 是否已存在
+            // ----------------------------------------------------------
+            // 1️⃣ 正規化 Email（移除前後空白）
+            // ----------------------------------------------------------
+            var email = dto.Email.Trim();
+
+            // ----------------------------------------------------------
+            // 2️⃣ 檢查是否已存在
+            // ----------------------------------------------------------
             // 使用 AnyAsync 效能較好，只回傳 true / false
-            if (await _db.Users.AnyAsync(u => u.Email == dto.Email))
+            if (await _db.Users.AnyAsync(u => u.Email == email))
                 return BadRequest("Email already exists");
 
-            // 2️⃣ 密碼長度基本檢查
+            // 密碼長度基本檢查
             // ⚠️ 實務上可再加：
             // - 大小寫
             // - 數字
@@ -58,20 +71,27 @@ namespace WebApplication1.Controllers
             if (dto.Password.Length < 8)
                 return BadRequest("Password must be at least 8 characters");
 
+            // ----------------------------------------------------------
             // 3️⃣ 建立 User Entity
+            // ----------------------------------------------------------
+
             var user = new User
             {
-                Email = dto.Email,
+                Email = email,
 
-                // ⚠️ 絕對不能存明碼密碼
-                // BCrypt 會自動加 salt，安全性高
+                // ⚠️ 絕對不可儲存明碼密碼
+                // BCrypt 會：
+                // - 自動產生 Salt
+                // - 自動處理加密成本
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password),
 
                 // 使用 UTC 時間，避免伺服器時區問題
                 CreatedAt = DateTime.UtcNow
             };
 
+            // ----------------------------------------------------------
             // 4️⃣ 新增使用者並存入資料庫
+            // ----------------------------------------------------------
             _db.Users.Add(user);
             await _db.SaveChangesAsync();
 
@@ -85,8 +105,11 @@ namespace WebApplication1.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginDto dto)
         {
+            // 正規化 Email
+            var email = dto.Email.Trim();
+
             // 1️⃣ 先用 Email 找使用者
-            var user = await _db.Users.FirstOrDefaultAsync(u => u.Email == dto.Email);
+            var user = await _db.Users.FirstOrDefaultAsync(u => u.Email == email);
 
             // ⚠️ 不要提示是「Email 錯」還是「密碼錯」
             // 這樣可以避免帳號被暴力嘗試

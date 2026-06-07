@@ -73,25 +73,67 @@ namespace WebApplication1.Data
         // ==========================================================
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // ----------------------------------------------------------
-            // 建立 Email 唯一索引
-            // ----------------------------------------------------------
-            // 為什麼要這樣做？
-            //
-            // 1️⃣ 確保 Email 不會重複（資料層保護）
-            // 2️⃣ 加快登入查詢速度（WHERE Email = ?）
-            //
-            // ⚠️ 即使 Controller 有檢查 Email 是否存在
-            // 還是必須在資料庫層做 Unique Constraint
-            // 因為：
-            // - 高併發情況下可能會同時註冊
-            // - 只有 DB Constraint 才能 100% 保證唯一性
-            modelBuilder.Entity<User>()
-                .HasIndex(u => u.Email)
-                .IsUnique();
+            // ==========================================================
+            // User 設定
+            // ==========================================================
+            modelBuilder.Entity<User>(entity =>
+            {
+                // ----------------------------------------------------------
+                // Email 設定為 citext（大小寫不敏感）
+                // ----------------------------------------------------------
+                // PostgreSQL 專用型別
+                // 比較時會自動忽略大小寫
+                entity.Property(u => u.Email)
+                    .HasColumnType("citext")  // ⭐ 核心關鍵
+                    .HasMaxLength(255)
+                    .IsRequired();
 
-            // ⚠️ 如果未來改 Email 欄位名稱
-            // 記得同步修改這裡，並重新 Migration
+                // ----------------------------------------------------------
+                // 建立唯一索引
+                // ----------------------------------------------------------
+                // 為什麼要這樣做？
+                //
+                // 1️⃣ 確保 Email 不會重複（資料層保護）
+                // 2️⃣ 加快登入查詢速度（WHERE Email = ?）
+                //
+                // ⚠️ 即使 Controller 有檢查 Email 是否存在
+                // 還是必須在資料庫層做 Unique Constraint
+                // 因為：
+                // - 高併發情況下可能會同時註冊
+                // - 只有 DB Constraint 才能 100% 保證唯一性
+                // 因為是 citext
+                // 所以 Unique 會自動大小寫不敏感
+                entity.HasIndex(u => u.Email)
+                      .IsUnique();
+
+                entity.Property(u => u.PasswordHash)
+                    .HasMaxLength(100)
+                    .IsRequired();
+            });
+
+            // ==========================================================
+            // ChatMessage 設定
+            // ==========================================================
+
+            modelBuilder.Entity<ChatMessage>()
+                .Property(c => c.Content)
+                .HasMaxLength(2000)
+                .IsRequired();
+
+            modelBuilder.Entity<ChatMessage>()
+                .HasIndex(c => c.UserId);
+
+            // ==========================================================
+            // Memory 設定
+            // ==========================================================
+
+            modelBuilder.Entity<Memory>()
+                .Property(m => m.Summary)
+                .HasMaxLength(2000)
+                .IsRequired();
+
+            modelBuilder.Entity<Memory>()
+                .HasIndex(m => m.UserId);
 
             // ----------------------------------------------------------
             // 一定要呼叫 base
