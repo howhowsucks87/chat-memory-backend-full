@@ -133,6 +133,22 @@ builder.Services
     .Validate(o => !string.IsNullOrWhiteSpace(o.Key),
         "Jwt Key is required")
 
+    // Key 至少 32 bytes
+    .Validate(
+        o => Encoding.UTF8.GetByteCount(o.Key) >= 32,
+        "Jwt Key must be at least 32 bytes (256 bits)"
+    )
+
+    .Validate(
+        o => !string.IsNullOrWhiteSpace(o.Issuer),
+        "Jwt Issuer is required"
+    )
+
+    .Validate(
+        o => !string.IsNullOrWhiteSpace(o.Audience),
+        "Jwt Audience is required"
+    )
+
     // 過期時間必須 > 0
     .Validate(o => o.ExpireMinutes > 0,
         "ExpireMinutes must be greater than 0")

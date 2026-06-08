@@ -1,4 +1,6 @@
-﻿namespace WebApplication1.DTOs
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace WebApplication1.DTOs
 {
     // ==========================================================
     // LoginDto
@@ -29,16 +31,15 @@
         // ----------------------------------------------------------
         // 使用者登入帳號
         //
-        // ⚠️ 注意：
-        // - 應該搭配 [Required] 與 [EmailAddress] 驗證
-        // - 不建議允許 null
-        //
         // 目前使用 null! 的意思是：
         // 「告訴編譯器這個值不會是 null」
         //
         // 因為：
         // - ASP.NET Core Model Binding 會自動填值
         // - 如果未填值，應由模型驗證處理
+        [Required]
+        [EmailAddress]
+        [MaxLength(255)]
         public string Email { get; set; } = null!;
 
 
@@ -56,6 +57,8 @@
         // - 不要在 Log 中輸出 Password
         // - 不要回傳到前端
         // - 不要在 Exception 中顯示
+        [Required]
+        [MinLength(8)]
         public string Password { get; set; } = null!;
     }
 }

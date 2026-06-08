@@ -107,7 +107,7 @@ namespace WebApplication1.Data
                       .IsUnique();
 
                 entity.Property(u => u.PasswordHash)
-                    .HasMaxLength(100)
+                    .HasMaxLength(255)
                     .IsRequired();
             });
 

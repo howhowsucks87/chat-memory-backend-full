@@ -1,4 +1,6 @@
-﻿namespace WebApplication1.DTOs
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace WebApplication1.DTOs
 {
     // ==========================================================
     // RegisterDto
@@ -27,14 +29,12 @@
         // ----------------------------------------------------------
         // 使用者的登入帳號（必須唯一）
         //
-        // ⚠️ 注意事項：
-        // 1️⃣ 註冊前必須檢查是否已存在
-        // 2️⃣ 資料庫層一定要加 Unique Index（防止高併發重複）
-        // 3️⃣ 建議轉成小寫儲存（避免大小寫問題）
-        //
         // 目前使用 null!：
         // - 告訴編譯器這個值不會為 null
         // - 實際是否為 null 應由 Model Validation 控制
+        [Required]
+        [EmailAddress]
+        [MaxLength(255)]
         public string Email { get; set; } = null!;
 
 
@@ -53,6 +53,9 @@
         // - 密碼長度限制
         // - 複雜度檢查
         // - 防止超長字串攻擊
+        [Required]
+        [MinLength(8)]
+        [MaxLength(100)]
         public string Password { get; set; } = null!;
     }
 }

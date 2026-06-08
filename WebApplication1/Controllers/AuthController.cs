@@ -9,6 +9,7 @@ using WebApplication1.Data;
 using WebApplication1.DTOs;
 using WebApplication1.Models;
 using WebApplication1.Options;
+using Npgsql;
 
 namespace WebApplication1.Controllers
 {
@@ -52,34 +53,29 @@ namespace WebApplication1.Controllers
         public async Task<IActionResult> Register(RegisterDto dto)
         {
             // ----------------------------------------------------------
-            // 1️⃣ 正規化 Email（移除前後空白）
+            // 1️ 正規化 Email（移除前後空白）
             // ----------------------------------------------------------
-            var email = dto.Email.Trim();
+            var email = dto.Email.Trim().ToLowerInvariant();
 
             // ----------------------------------------------------------
-            // 2️⃣ 檢查是否已存在
+            // 2️ 檢查是否已存在
             // ----------------------------------------------------------
             // 使用 AnyAsync 效能較好，只回傳 true / false
             if (await _db.Users.AnyAsync(u => u.Email == email))
                 return BadRequest("Email already exists");
 
-            // 密碼長度基本檢查
-            // ⚠️ 實務上可再加：
-            // - 大小寫
-            // - 數字
-            // - 特殊符號
             if (dto.Password.Length < 8)
                 return BadRequest("Password must be at least 8 characters");
 
             // ----------------------------------------------------------
-            // 3️⃣ 建立 User Entity
+            // 3️ 建立 User Entity
             // ----------------------------------------------------------
 
             var user = new User
             {
                 Email = email,
 
-                // ⚠️ 絕對不可儲存明碼密碼
+                // 絕對不可儲存明碼密碼
                 // BCrypt 會：
                 // - 自動產生 Salt
                 // - 自動處理加密成本
@@ -90,13 +86,26 @@ namespace WebApplication1.Controllers
             };
 
             // ----------------------------------------------------------
-            // 4️⃣ 新增使用者並存入資料庫
+            // 4️ 新增使用者並存入資料庫
             // ----------------------------------------------------------
-            _db.Users.Add(user);
-            await _db.SaveChangesAsync();
+            try
+            {
+                _db.Users.Add(user);
 
-            // ⚠️ 這裡只回傳成功訊息，不回傳 User 資料（避免資安問題）
-            return Ok("Register success");
+                await _db.SaveChangesAsync();
+
+                return Ok("Register success");
+            }
+            catch (DbUpdateException ex)
+            {
+                if (ex.InnerException is PostgresException pgEx
+                    && pgEx.SqlState == "23505")
+                {
+                    return BadRequest("Email already exists");
+                }
+
+                throw;
+            }
         }
 
         // =====================
@@ -108,23 +117,23 @@ namespace WebApplication1.Controllers
             // 正規化 Email
             var email = dto.Email.Trim();
 
-            // 1️⃣ 先用 Email 找使用者
+            // 1️ 先用 Email 找使用者
             var user = await _db.Users.FirstOrDefaultAsync(u => u.Email == email);
 
-            // ⚠️ 不要提示是「Email 錯」還是「密碼錯」
+            // 不要提示是「Email 錯」還是「密碼錯」
             // 這樣可以避免帳號被暴力嘗試
             if (user == null)
                 return Unauthorized("Invalid email or password");
 
-            // 2️⃣ 驗證密碼
+            // 2️ 驗證密碼
             bool isValid = BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash);
             if (!isValid)
                 return Unauthorized("Invalid email or password");
 
-            // 3️⃣ 產生 JWT Token
+            // 3️ 產生 JWT Token
             var token = GenerateJwtToken(user);
 
-            // 4️⃣ 回傳 Token
+            // 4️ 回傳 Token
             // 前端通常會存到：
             // - Memory
             // - LocalStorage
@@ -142,6 +151,9 @@ namespace WebApplication1.Controllers
             // =====================
             var claims = new List<Claim>
             {
+                // ASP.NET Core 標準使用者 Id
+                new Claim(ClaimTypes.NameIdentifier,user.Id.ToString()
+    ),
                 // JWT 標準欄位：Subject
                 // 通常放 UserId
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
@@ -157,8 +169,6 @@ namespace WebApplication1.Controllers
             // =====================
             // 加密金鑰
             // =====================
-            // ⚠️ Key 必須夠長（至少 32 bytes）
-            // ⚠️ 絕對不能寫死在程式碼中
             var key = new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes(_jwt.Key)
             );

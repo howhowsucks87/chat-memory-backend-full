@@ -40,9 +40,6 @@
         // ⚠️ 安全性注意：
         // - 不要從前端直接接收 UserId
         // - 應從 JWT Claim 取得目前登入者 Id
-        //
-        // 例如：
-        // var userId = User.FindFirstValue(JwtRegisteredClaimNames.Sub);
         public int UserId { get; set; }
 
 
@@ -55,15 +52,6 @@
         // - 使用者偏好
         // - 對話重點
         // - 任務紀錄
-        //
-        // ⚠️ 注意事項：
-        // 1️⃣ 內容可能很長（建議限制長度）
-        // 2️⃣ 若會顯示在前端，需防止 XSS
-        // 3️⃣ 不建議無限制 nvarchar(max)
-        //
-        // 建議在 DbContext 中加：
-        // .Property(m => m.Summary)
-        // .HasMaxLength(2000);
         //
         // 如果未來要做向量搜尋：
         // - 這裡可搭配 Embedding 欄位

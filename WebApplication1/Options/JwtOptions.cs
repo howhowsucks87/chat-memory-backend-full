@@ -22,19 +22,10 @@ public class JwtOptions
     /// 驗證時也會用這個 Key 驗證是否合法。
     /// 
     /// ⚠️ 重要注意事項：
-    /// 1. 長度至少 32 bytes（建議 256-bit 以上）
-    /// 2. 不要寫死在程式碼裡
-    /// 3. 不要 commit 到 GitHub
-    /// 4. 正式環境請放在：
+    /// 1. 正式環境請放在：
     ///    - 環境變數
     ///    - Azure Key Vault
     ///    - Secret Manager
-    /// 
-    /// ❌ 常見錯誤：
-    /// "123456" 這種超短字串
-    /// 
-    /// ✔ 建議：
-    /// 使用隨機產生器產生高強度金鑰
     /// </summary>
     public string Key { get; set; } = null!;
 

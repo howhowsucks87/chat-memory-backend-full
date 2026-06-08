@@ -20,15 +20,15 @@ namespace WebApplication1.Controllers
         // GET api/users/me
         // =============================
         // [Authorize] 代表：
-        // 1️⃣ 必須帶有效 JWT Token
-        // 2️⃣ Token 必須未過期
-        // 3️⃣ 簽章必須正確
-        // 4️⃣ issuer / audience 必須符合設定
+        // 1️ 必須帶有效 JWT Token
+        // 2️ Token 必須未過期
+        // 3️ 簽章必須正確
+        // 4️ issuer / audience 必須符合設定
         //
         // 如果驗證失敗：
         // → ASP.NET Core 會自動回傳 401 Unauthorized
         //
-        // ⚠️ 前提：
+        // 前提：
         // Program.cs 必須有：
         // builder.Services.AddAuthentication(...)
         // app.UseAuthentication();
@@ -55,7 +55,7 @@ namespace WebApplication1.Controllers
             // new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString())
             //
             // 所以這裡會取得使用者 Id
-            var userId = User.FindFirstValue(JwtRegisteredClaimNames.Sub);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             // =============================
             // 取得 Email Claim
@@ -68,9 +68,6 @@ namespace WebApplication1.Controllers
             // 1️⃣ 如果 Claim 名稱拼錯，會回傳 null
             // 2️⃣ 如果 Token 裡沒有該 Claim，也會回傳 null
             // 3️⃣ FindFirstValue 比 FindFirst 更安全（自動取 Value）
-            //
-            // 更嚴謹寫法可以：
-            // if (userId == null) return Unauthorized();
 
             // =============================
             // 回傳目前登入者資訊
