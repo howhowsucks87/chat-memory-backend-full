@@ -135,6 +135,24 @@ namespace WebApplication1.Data
             modelBuilder.Entity<Memory>()
                 .HasIndex(m => m.UserId);
 
+            // ==========================================================
+            // 關聯設定
+            // ==========================================================
+
+            // ChatMessage ↔ User
+            modelBuilder.Entity<ChatMessage>()
+                .HasOne(c => c.User)
+                .WithMany(u => u.ChatMessages)
+                .HasForeignKey(c => c.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Memory ↔ User
+            modelBuilder.Entity<Memory>()
+                .HasOne(m => m.User)
+                .WithMany(u => u.Memories)
+                .HasForeignKey(m => m.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
             // ----------------------------------------------------------
             // 一定要呼叫 base
             // ----------------------------------------------------------

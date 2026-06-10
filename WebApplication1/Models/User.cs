@@ -59,5 +59,17 @@
         // 若資料庫也有 DefaultValue
         // 需避免雙重設定
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+        // ==========================
+        // Navigation Properties
+        // ==========================
+
+        // 一個 User 擁有多筆聊天紀錄
+        public ICollection<ChatMessage> ChatMessages { get; set; } 
+            = new List<ChatMessage>();
+
+        // 一個 User 擁有多筆記憶資料
+        public ICollection<Memory> Memories { get; set; } 
+            = new List<Memory>();
     }
 }

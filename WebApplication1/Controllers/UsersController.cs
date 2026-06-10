@@ -2,6 +2,10 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using System.IdentityModel.Tokens.Jwt;
+using WebApplication1.Extensions;
+using WebApplication1.Data;
+using Microsoft.EntityFrameworkCore;
+using WebApplication1.DTOs;
 
 namespace WebApplication1.Controllers
 {
@@ -15,6 +19,13 @@ namespace WebApplication1.Controllers
     [Route("api/users")] // API 路由前綴
     public class UsersController : ControllerBase
     {
+        // 先注入 DbContext
+        private readonly AppDbContext _db;
+
+        public UsersController(AppDbContext db)
+        {
+            _db = db;
+        }
         // =============================
         // 取得目前登入使用者資訊
         // GET api/users/me
@@ -35,7 +46,7 @@ namespace WebApplication1.Controllers
         // app.UseAuthorization();
         [Authorize]
         [HttpGet("me")]
-        public IActionResult Me()
+        public async Task<IActionResult> Me()
         {
             // =============================
             // User 物件說明
@@ -55,12 +66,26 @@ namespace WebApplication1.Controllers
             // new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString())
             //
             // 所以這裡會取得使用者 Id
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = User.GetUserId();
 
             // =============================
             // 取得 Email Claim
             // =============================
-            var email = User.FindFirstValue(JwtRegisteredClaimNames.Email);
+            var user = await _db.Users
+             .AsNoTracking()
+                .Where(u => u.Id == userId)
+                .Select(u => new UserMeDto
+                {
+                    Id = u.Id,
+                    Email = u.Email,
+                    CreatedAt = u.CreatedAt
+                })
+                .FirstOrDefaultAsync();
+
+            if (user == null)
+            {
+                return NotFound("User not found");
+            }
 
             // =============================
             // ⚠️ 注意事項
@@ -72,11 +97,7 @@ namespace WebApplication1.Controllers
             // =============================
             // 回傳目前登入者資訊
             // =============================
-            return Ok(new
-            {
-                UserId = userId,
-                Email = email
-            });
+            return Ok(user);
 
             // ⚠️ 這裡只回傳必要資訊
             // 不要回傳：
