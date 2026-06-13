@@ -84,7 +84,12 @@ namespace WebApplication1.Controllers
 
             if (user == null)
             {
-                return NotFound("User not found");
+                return NotFound(new ErrorResponse
+                {
+                    Success = false,
+                    Message = "User not found"
+                });
+
             }
 
             // =============================
@@ -97,7 +102,13 @@ namespace WebApplication1.Controllers
             // =============================
             // 回傳目前登入者資訊
             // =============================
-            return Ok(user);
+            return Ok(new ApiResponse<UserMeDto>
+            {
+                Success = true,
+                Message = "User retrieved",
+                Data = user
+            });
+
 
             // ⚠️ 這裡只回傳必要資訊
             // 不要回傳：

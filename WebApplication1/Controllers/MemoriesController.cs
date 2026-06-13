@@ -37,12 +37,18 @@ public class MemoriesController : ControllerBase
 
         await _db.SaveChangesAsync();
 
-        return Ok(new MemoryDto
+        return Ok(new ApiResponse<MemoryDto>
         {
-            Id = memory.Id,
-            Summary = memory.Summary,
-            CreatedAt = memory.CreatedAt
+            Success = true,
+            Message = "Memory created",
+            Data = new MemoryDto
+            {
+                Id = memory.Id,
+                Summary = memory.Summary,
+                CreatedAt = memory.CreatedAt
+            }
         });
+
     }
 
     [HttpGet]
@@ -75,12 +81,17 @@ public class MemoriesController : ControllerBase
             })
             .ToListAsync();
 
-        return Ok(new PagedResult<MemoryDto>
+        return Ok(new ApiResponse<PagedResult<MemoryDto>>
         {
-            Page = page,
-            PageSize = pageSize,
-            TotalCount = totalCount,
-            Items = memories
+            Success = true,
+            Message = "memories retrieved",
+            Data = new PagedResult<MemoryDto>
+            {
+                Page = page,
+                PageSize = pageSize,
+                TotalCount = totalCount,
+                Items = memories
+            }
         });
     }
 
@@ -103,9 +114,18 @@ public class MemoriesController : ControllerBase
             .FirstOrDefaultAsync();
 
         if (memory == null)
-            return NotFound("Memory not found");
+            return NotFound(new ErrorResponse
+            {
+                Success = false,
+                Message = "Memory not found"
+            });
 
-        return Ok(memory);
+        return Ok(new ApiResponse<MemoryDto>
+        {
+            Success = true,
+            Message = "Memory retrieved",
+            Data = memory
+        });
     }
 
     [HttpDelete("{id:int}")]
@@ -119,12 +139,22 @@ public class MemoriesController : ControllerBase
                 x.UserId == userId);
 
         if (memory == null)
-            return NotFound("Memory not found");
+            return NotFound(new ErrorResponse
+            {
+                Success = false,
+                Message = "Memory not found"
+            });
 
         _db.Memories.Remove(memory);
 
         await _db.SaveChangesAsync();
 
-        return NoContent();
+        return Ok(new ApiResponse<object>
+        {
+            Success = true,
+            Message = "Memory deleted",
+            Data = null
+        });
+
     }
 }

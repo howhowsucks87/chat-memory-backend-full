@@ -22,6 +22,7 @@ using WebApplication1.Options;
 using Microsoft.Extensions.Options;
 using System.Security.Claims;
 using System.IdentityModel.Tokens.Jwt;
+using WebApplication1.Extensions;
 
 
 // 建立 WebApplication Builder
@@ -246,6 +247,8 @@ app.UseHttpsRedirection();
 否則 Token 可被攔截。
 */
 
+// 例外處理統一格式
+app.UseGlobalException();
 
 // 🔥 這行非常重要
 app.UseAuthentication();

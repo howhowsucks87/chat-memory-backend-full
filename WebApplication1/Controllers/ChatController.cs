@@ -37,12 +37,18 @@ public class ChatController : ControllerBase
 
         await _db.SaveChangesAsync();
 
-        return Ok(new
+        return Ok(new ApiResponse<ChatMessageDto>
         {
-            message.Id,
-            message.Content,
-            message.CreatedAt
+            Success = true,
+            Message = "Message created",
+            Data = new ChatMessageDto
+            {
+                Id = message.Id,
+                Content = message.Content,
+                CreatedAt = message.CreatedAt
+            }
         });
+
     }
 
     [HttpGet("messages")]
@@ -75,13 +81,19 @@ public class ChatController : ControllerBase
             })
             .ToListAsync();
 
-        return Ok(new PagedResult<ChatMessageDto>
+        return Ok(new ApiResponse<PagedResult<ChatMessageDto>>
         {
-            Page = page,
-            PageSize = pageSize,
-            TotalCount = totalCount,
-            Items = messages
+            Success = true,
+            Message = "Messages retrieved",
+            Data = new PagedResult<ChatMessageDto>
+            {
+                Page = page,
+                PageSize = pageSize,
+                TotalCount = totalCount,
+                Items = messages
+            }
         });
+
     }
 
     [HttpGet("messages/{id:int}")]
@@ -104,10 +116,21 @@ public class ChatController : ControllerBase
 
         if (message == null)
         {
-            return NotFound("Message not found");
+            return NotFound(new ErrorResponse
+            {
+                Success = false,
+                Message = "Message not found"
+            });
+
         }
 
-        return Ok(message);
+        return Ok(new ApiResponse<ChatMessageDto>
+        {
+            Success = true,
+            Message = "Message retrieved",
+            Data = message
+        });
+
     }
 
     [HttpDelete("messages/{id:int}")]
@@ -122,13 +145,24 @@ public class ChatController : ControllerBase
 
         if (message == null)
         {
-            return NotFound("Message not found");
+            return NotFound(new ErrorResponse
+            {
+                Success = false,
+                Message = "Message not found"
+            });
+
         }
 
         _db.ChatMessages.Remove(message);
 
         await _db.SaveChangesAsync();
 
-        return NoContent();
+        return Ok(new ApiResponse<object>
+        {
+            Success = true,
+            Message = "Message deleted",
+            Data = null
+        });
+
     }
 }

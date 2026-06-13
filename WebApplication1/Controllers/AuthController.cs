@@ -62,10 +62,20 @@ namespace WebApplication1.Controllers
             // ----------------------------------------------------------
             // 使用 AnyAsync 效能較好，只回傳 true / false
             if (await _db.Users.AnyAsync(u => u.Email == email))
-                return BadRequest("Email already exists");
+                return BadRequest(new ErrorResponse
+                {
+                    Success = false,
+                    Message = "Email already exists"
+                });
+
 
             if (dto.Password.Length < 8)
-                return BadRequest("Password must be at least 8 characters");
+                return BadRequest(new ErrorResponse
+                {
+                    Success = false,
+                    Message = "Password must be at least 8 characters"
+                });
+
 
             // ----------------------------------------------------------
             // 3️ 建立 User Entity
@@ -94,14 +104,25 @@ namespace WebApplication1.Controllers
 
                 await _db.SaveChangesAsync();
 
-                return Ok("Register success");
+                return Ok(new ApiResponse<object>
+                {
+                    Success = true,
+                    Message = "Register success",
+                    Data = null
+                });
+
             }
             catch (DbUpdateException ex)
             {
                 if (ex.InnerException is PostgresException pgEx
                     && pgEx.SqlState == "23505")
                 {
-                    return BadRequest("Email already exists");
+                    return BadRequest(new ErrorResponse
+                    {
+                        Success = false,
+                        Message = "Email already exists"
+                    });
+
                 }
 
                 throw;
@@ -123,12 +144,22 @@ namespace WebApplication1.Controllers
             // 不要提示是「Email 錯」還是「密碼錯」
             // 這樣可以避免帳號被暴力嘗試
             if (user == null)
-                return Unauthorized("Invalid email or password");
+                return Unauthorized(new ErrorResponse
+                {
+                    Success = false,
+                    Message = "Invalid email or password"
+                });
+
 
             // 2️ 驗證密碼
             bool isValid = BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash);
             if (!isValid)
-                return Unauthorized("Invalid email or password");
+                return Unauthorized(new ErrorResponse
+                {
+                    Success = false,
+                    Message = "Invalid email or password"
+                });
+
 
             // 3️ 產生 JWT Token
             var token = GenerateJwtToken(user);
@@ -138,7 +169,16 @@ namespace WebApplication1.Controllers
             // - Memory
             // - LocalStorage
             // - HttpOnly Cookie（較安全）
-            return Ok(new { token });
+            return Ok(new ApiResponse<object>
+            {
+                Success = true,
+                Message = "Login success",
+                Data = new
+                {
+                    Token = token
+                }
+            });
+
         }
 
         // =====================
