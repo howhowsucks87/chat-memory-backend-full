@@ -1,4 +1,4 @@
-﻿namespace WebApplication1.Options;
+﻿namespace ChatMemoryApi.Options;
 
 /// <summary>
 /// JWT 設定類別

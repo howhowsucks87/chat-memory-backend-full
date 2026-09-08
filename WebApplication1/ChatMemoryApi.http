@@ -1,0 +1,6 @@
+@ChatMemoryApi_HostAddress = http://localhost:5204
+
+GET {{ChatMemoryApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

@@ -1,6 +1,6 @@
 ﻿using System.Security.Claims;
 
-namespace WebApplication1.Extensions;
+namespace ChatMemoryApi.Extensions;
 
 public static class ClaimsPrincipalExtensions
 {

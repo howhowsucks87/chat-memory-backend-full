@@ -5,13 +5,13 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using WebApplication1.Data;
-using WebApplication1.DTOs;
-using WebApplication1.Models;
-using WebApplication1.Options;
+using ChatMemoryApi.Data;
+using ChatMemoryApi.DTOs;
+using ChatMemoryApi.Models;
+using ChatMemoryApi.Options;
 using Npgsql;
 
-namespace WebApplication1.Controllers
+namespace ChatMemoryApi.Controllers
 {
     // =====================
     // AuthController

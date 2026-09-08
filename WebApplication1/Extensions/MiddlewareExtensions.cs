@@ -1,6 +1,6 @@
-﻿using WebApplication1.Middleware;
+﻿using ChatMemoryApi.Middleware;
 
-namespace WebApplication1.Extensions;
+namespace ChatMemoryApi.Extensions;
 
 public static class MiddlewareExtensions
 {

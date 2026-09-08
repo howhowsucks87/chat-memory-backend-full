@@ -1,4 +1,4 @@
-﻿namespace WebApplication1.DTOs;
+﻿namespace ChatMemoryApi.DTOs;
 
 public class PagedResult<T>
 {

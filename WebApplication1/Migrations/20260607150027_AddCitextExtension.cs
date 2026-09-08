@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace WebApplication1.Migrations
+namespace ChatMemoryApi.Migrations
 {
     /// <inheritdoc />
     public partial class AddCitextExtension : Migration

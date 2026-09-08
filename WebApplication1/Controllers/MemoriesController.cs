@@ -1,12 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using WebApplication1.Data;
-using WebApplication1.DTOs;
-using WebApplication1.Extensions;
-using WebApplication1.Models;
+using ChatMemoryApi.Data;
+using ChatMemoryApi.DTOs;
+using ChatMemoryApi.Extensions;
+using ChatMemoryApi.Models;
 
-namespace WebApplication1.Controllers;
+namespace ChatMemoryApi.Controllers;
 
 [ApiController]
 [Route("api/memories")]

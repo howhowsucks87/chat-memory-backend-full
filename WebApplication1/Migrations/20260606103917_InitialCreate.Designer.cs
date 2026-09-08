@@ -5,11 +5,11 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using WebApplication1.Data;
+using ChatMemoryApi.Data;
 
 #nullable disable
 
-namespace WebApplication1.Migrations
+namespace ChatMemoryApi.Migrations
 {
     [DbContext(typeof(AppDbContext))]
     [Migration("20260606103917_InitialCreate")]
@@ -25,7 +25,7 @@ namespace WebApplication1.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("WebApplication1.Models.ChatMessage", b =>
+            modelBuilder.Entity("ChatMemoryApi.Models.ChatMessage", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -50,7 +50,7 @@ namespace WebApplication1.Migrations
                     b.ToTable("ChatMessages");
                 });
 
-            modelBuilder.Entity("WebApplication1.Models.Memory", b =>
+            modelBuilder.Entity("ChatMemoryApi.Models.Memory", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -75,7 +75,7 @@ namespace WebApplication1.Migrations
                     b.ToTable("Memories");
                 });
 
-            modelBuilder.Entity("WebApplication1.Models.User", b =>
+            modelBuilder.Entity("ChatMemoryApi.Models.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -102,9 +102,9 @@ namespace WebApplication1.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("WebApplication1.Models.ChatMessage", b =>
+            modelBuilder.Entity("ChatMemoryApi.Models.ChatMessage", b =>
                 {
-                    b.HasOne("WebApplication1.Models.User", "User")
+                    b.HasOne("ChatMemoryApi.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -113,9 +113,9 @@ namespace WebApplication1.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("WebApplication1.Models.Memory", b =>
+            modelBuilder.Entity("ChatMemoryApi.Models.Memory", b =>
                 {
-                    b.HasOne("WebApplication1.Models.User", "User")
+                    b.HasOne("ChatMemoryApi.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)

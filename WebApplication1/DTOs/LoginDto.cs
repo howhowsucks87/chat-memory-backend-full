@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace WebApplication1.DTOs
+namespace ChatMemoryApi.DTOs
 {
     // ==========================================================
     // LoginDto

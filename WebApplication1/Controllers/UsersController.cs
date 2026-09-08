@@ -2,12 +2,12 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using System.IdentityModel.Tokens.Jwt;
-using WebApplication1.Extensions;
-using WebApplication1.Data;
+using ChatMemoryApi.Extensions;
+using ChatMemoryApi.Data;
 using Microsoft.EntityFrameworkCore;
-using WebApplication1.DTOs;
+using ChatMemoryApi.DTOs;
 
-namespace WebApplication1.Controllers
+namespace ChatMemoryApi.Controllers
 {
     // =============================
     // UsersController

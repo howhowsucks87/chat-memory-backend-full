@@ -1,7 +1,7 @@
 ﻿using System.Text.Json;
-using WebApplication1.DTOs;
+using ChatMemoryApi.DTOs;
 
-namespace WebApplication1.Middleware;
+namespace ChatMemoryApi.Middleware;
 
 public class GlobalExceptionMiddleware
 {

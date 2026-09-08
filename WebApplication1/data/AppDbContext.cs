@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using WebApplication1.Models;
+using ChatMemoryApi.Models;
 
-namespace WebApplication1.Data
+namespace ChatMemoryApi.Data
 {
     // ==========================================================
     // AppDbContext

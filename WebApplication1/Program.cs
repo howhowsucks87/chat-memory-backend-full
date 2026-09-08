@@ -14,15 +14,15 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
 // 自己的 DbContext
-using WebApplication1.Data;
+using ChatMemoryApi.Data;
 
 // 自己的 Jwt 設定類別
-using WebApplication1.Options;
+using ChatMemoryApi.Options;
 
 using Microsoft.Extensions.Options;
 using System.Security.Claims;
 using System.IdentityModel.Tokens.Jwt;
-using WebApplication1.Extensions;
+using ChatMemoryApi.Extensions;
 
 
 // 建立 WebApplication Builder
